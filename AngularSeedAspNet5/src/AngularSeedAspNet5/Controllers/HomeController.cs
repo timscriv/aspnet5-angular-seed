@@ -31,5 +31,10 @@ namespace AngularSeedAspNet5.Controllers
         {
             return View();
         }
+
+        public IActionResult TestRunner()
+        {
+            return View();
+        }
     }
 }

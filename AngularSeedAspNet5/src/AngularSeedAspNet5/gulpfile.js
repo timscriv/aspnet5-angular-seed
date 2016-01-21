@@ -5,7 +5,8 @@ var gulp = require("gulp"),
     rimraf = require("rimraf"),
     concat = require("gulp-concat"),
     cssmin = require("gulp-cssmin"),
-    uglify = require("gulp-uglify");
+    uglify = require("gulp-uglify"),
+    KarmaServer = require('karma').Server;
 
 var paths = {
     webroot: "./wwwroot/"
@@ -43,3 +44,17 @@ gulp.task("min:css", function () {
 });
 
 gulp.task("min", ["min:js", "min:css"]);
+
+
+gulp.task('test', function (done) {
+    new KarmaServer({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, done).start();
+});
+
+gulp.task('tdd', function (done) {
+    new KarmaServer({
+        configFile: __dirname + '/karma.conf.js'
+    }, done).start();
+});
