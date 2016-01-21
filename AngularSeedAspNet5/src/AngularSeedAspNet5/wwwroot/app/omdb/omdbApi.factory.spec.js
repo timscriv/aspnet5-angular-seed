@@ -3,20 +3,63 @@
     var movieDataById = { "Title": "Star Trek", "Year": "2009", "Rated": "PG-13", "Released": "08 May 2009", "Runtime": "127 min", "Genre": "Action, Adventure, Sci-Fi", "Director": "J.J. Abrams", "Writer": "Roberto Orci, Alex Kurtzman, Gene Roddenberry (television series \"Star Trek\")", "Actors": "Chris Pine, Zachary Quinto, Leonard Nimoy, Eric Bana", "Plot": "The brash James T. Kirk tries to live up to his father's legacy with Mr. Spock keeping him in check as a vengeful, time-traveling Romulan creates black holes to destroy the Federation one planet at a time.", "Language": "English", "Country": "USA, Germany", "Awards": "Won 1 Oscar. Another 22 wins & 77 nominations.", "Poster": "http://ia.media-imdb.com/images/M/MV5BMjE5NDQ5OTE4Ml5BMl5BanBnXkFtZTcwOTE3NDIzMw@@._V1_SX300.jpg", "Metascore": "82", "imdbRating": "8.0", "imdbVotes": "483,229", "imdbID": "tt0796366", "Type": "movie", "Response": "True" };
 
     var omdbApi = {};
-
+    var $httpBackend;
     //can leave out angular.mock within the beforeEach
     beforeEach(module('omdb'));
 
-    beforeEach(inject(function(_omdbApi_) {
+    beforeEach(inject(function (_omdbApi_,_$httpBackend_) {
         omdbApi = _omdbApi_;
+        $httpBackend = _$httpBackend_;
     }));
 
     it('should return search movie data', function () {
-        expect(omdbApi.search('star wars')).toEqual(movieData);
+        var response;
+
+        $httpBackend.when('GET', 'http://www.omdbapi.com/?s=star%20trek')
+            .respond(200, movieData);
+
+        omdbApi.search('star trek')
+            .then(function (data) {
+                response = data;
+            });
+
+        $httpBackend.flush();
+
+        expect(response).toEqual(movieData);
     });
 
     it('should return movie data by id', function () {
-        expect(omdbApi.findById('tt0796366')).toEqual(movieDataById);
+        var response;
+
+        $httpBackend.expect('GET', 'http://www.omdbapi.com/?i=tt0796366')
+            .respond(200, movieDataById);
+
+        omdbApi.findById('tt0796366')
+            .then(function (data) {
+                response = data;
+            });
+
+        $httpBackend.flush();
+
+
+        expect(response).toEqual(movieDataById);
     });
 
+    it('should handle error', function() {
+        var response;
+
+        $httpBackend.expect('GET', 'http://www.omdbapi.com/?i=tt0796366')
+            .respond(500);
+
+        omdbApi.findById('tt0796366')
+            .then(function (data) {
+                response = data;
+            }).catch(function() {
+                response = 'Error!';
+            });
+
+        $httpBackend.flush();
+
+        expect(response).toEqual('Error!');
+    });
 })

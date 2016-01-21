@@ -4,13 +4,20 @@
     var movieDataById = { "Title": "Star Trek", "Year": "2009", "Rated": "PG-13", "Released": "08 May 2009", "Runtime": "127 min", "Genre": "Action, Adventure, Sci-Fi", "Director": "J.J. Abrams", "Writer": "Roberto Orci, Alex Kurtzman, Gene Roddenberry (television series \"Star Trek\")", "Actors": "Chris Pine, Zachary Quinto, Leonard Nimoy, Eric Bana", "Plot": "The brash James T. Kirk tries to live up to his father's legacy with Mr. Spock keeping him in check as a vengeful, time-traveling Romulan creates black holes to destroy the Federation one planet at a time.", "Language": "English", "Country": "USA, Germany", "Awards": "Won 1 Oscar. Another 22 wins & 77 nominations.", "Poster": "http://ia.media-imdb.com/images/M/MV5BMjE5NDQ5OTE4Ml5BMl5BanBnXkFtZTcwOTE3NDIzMw@@._V1_SX300.jpg", "Metascore": "82", "imdbRating": "8.0", "imdbVotes": "483,229", "imdbID": "tt0796366", "Type": "movie", "Response": "True" };
 
     angular.module('omdb', [])
-        .factory('omdbApi', function() {
+        .factory('omdbApi', function($http) {
+            var baseUrl = 'http://www.omdbapi.com/?';
             var api = {
-                search: function(query) {
-                    return movieData;
+                search: function (query) {
+                    return $http.get(baseUrl + 's=' + encodeURIComponent(query))
+                        .then(function(result) {
+                            return result.data;
+                        });
                 },
-                findById: function(id) {
-                    return movieDataById;
+                findById: function (id) {
+                    return $http.get(baseUrl + 'i=' + id)
+                            .then(function (result) {
+                                return result.data;
+                            });
                 }
             };
 
